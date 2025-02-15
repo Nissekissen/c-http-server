@@ -3,7 +3,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -std=c99 -pthread -Wall -Wextra -Iinclude
 
 # Source and Object files (in /src)
 SRC = $(wildcard src/*.c)

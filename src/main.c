@@ -7,10 +7,13 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <pthread.h>
 
 #include "server.h"
+#include "route.h"
 
 #define PORT 0x901f // 8080
+
 
 int main(int argc, char *argv[])
 {
@@ -29,23 +32,37 @@ int main(int argc, char *argv[])
 
     listen(s, 10);
 
-    printf("Listening on port %d\n", PORT);
+    printf("Listening on port 8080");
+
+    struct route *routes = NULL;
+    setup_routes(&routes);
+    
 
     while (1) {
-        int client_fd = accept(s, 0, 0);
-        if (client_fd < 0) {
+
+        struct sockaddr_in client_addr;
+        socklen_t addr_len = sizeof(client_addr);
+
+        int *client_socket = malloc(sizeof(int));
+        *client_socket = accept(s, (struct sockaddr *)&client_addr, &addr_len);
+        if (*client_socket < 0) 
+        {
             perror("accept");
-            return 1;
+            free(client_socket);
+            continue;
         }
 
-        if (fork() == 0) {
-            close(s);
-            handle_client(client_fd);
-            close(client_fd);
-            exit(0);
-        }
+        
+        struct thread_args *args = malloc(sizeof(struct thread_args));
+        args->client_fd = *client_socket;
+        args->routes = routes; 
 
-        close(client_fd);
+        pthread_t thread_id;
+        pthread_create(&thread_id, NULL, handle_client, args);
+        pthread_detach(thread_id);
+
+        free(client_socket); 
+
     }
 
     return 0;

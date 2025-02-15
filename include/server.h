@@ -1,8 +1,9 @@
-
 #ifndef SERVER_H
 #define SERVER_H
 
 #define MAX_HEADERS 32
+
+#include "route.h"
 
 struct header {
     char *name;
@@ -25,9 +26,19 @@ struct response {
     char *body;
 };
 
+struct thread_args {
+    int client_fd;
+    struct route *routes;
+};
+
 void parse_request(char *buf, struct request *req);
 void send_response(int client_fd, struct response *res);
 
-void handle_client(int client_fd);
+void handle_client(void *arg);
+
+void send_static_file(int client_fd, struct request *req);
+
+// Serve static files from the "public" directory
+void serve_static_files(struct route **head, char *path);
 
 #endif
