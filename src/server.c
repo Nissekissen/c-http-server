@@ -87,6 +87,7 @@ void handle_client(void *arg)
     struct thread_args *args = (struct thread_args *)arg;
     int client_fd = args->client_fd;
     struct route *routes = args->routes;
+    struct error *errors = args->errors;
 
     free(args);
 
@@ -101,7 +102,7 @@ void handle_client(void *arg)
 
     // printf("Parsed request: %s\n", req.version); // Debug statement
 
-    handle_route(client_fd, &req, routes);
+    handle_route(client_fd, &req, routes, errors);
 
     close(client_fd);
 

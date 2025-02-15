@@ -11,6 +11,7 @@
 
 #include "server.h"
 #include "route.h"
+#include "error.h"
 
 #define PORT 0x901f // 8080
 
@@ -32,11 +33,10 @@ int main(int argc, char *argv[])
 
     listen(s, 10);
 
-    printf("Listening on port 8080");
+    printf("Listening on port 8080\n");
 
     struct route *routes = NULL;
     setup_routes(&routes);
-    
 
     while (1) {
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         
         struct thread_args *args = malloc(sizeof(struct thread_args));
         args->client_fd = *client_socket;
-        args->routes = routes; 
+        args->routes = routes;
 
         pthread_t thread_id;
         pthread_create(&thread_id, NULL, handle_client, args);

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "error.h"
+
 
 void add_route(struct route **head, char *path, void (*handler)(int, struct request *))
 {
@@ -13,18 +15,18 @@ void add_route(struct route **head, char *path, void (*handler)(int, struct requ
     new_route->next = *head;
     *head = new_route;
 
-    printf("Added route %s\n", new_route->path);
 }
 
-void handle_route(int client_fd, struct request *req, struct route *head)
+void handle_route(int client_fd, struct request *req, struct route *route_head, struct error *err_head)
 {
-    struct route *current = head;
+    struct route *current = route_head;
     while (current) {
-        printf("Comparing %s to %s\n", req->path, current->path);
         if (strcmp(req->path, current->path) == 0) {
             current->handler(client_fd, req);
             return;
         }
         current = current->next;
     }
+
+    send_error(client_fd, 404, req);
 }

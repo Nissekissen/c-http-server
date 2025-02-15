@@ -10,12 +10,18 @@ struct header {
     char *value;
 };
 
+struct param {
+    char *name;
+    char *value;
+};
+
 struct request {
     char *method;
     char *path;
     char *version;
     struct header headers[MAX_HEADERS];
     char *body;
+    struct param params[MAX_HEADERS];
 };
 
 struct response {
@@ -29,6 +35,7 @@ struct response {
 struct thread_args {
     int client_fd;
     struct route *routes;
+    struct error *errors;
 };
 
 void parse_request(char *buf, struct request *req);
