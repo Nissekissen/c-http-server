@@ -31,14 +31,14 @@ void send_error(int client_fd, int status_code, struct request *req)
         .version = "HTTP/1.1",
         .status_code = status_code,
         .status_text = "Error",
-        .body = "An error occurred"
+        .body = "An error occurred",
     };
 
-    get_default_error_handler(client_fd, &res, status_code);
+    get_default_error_handler(&res, status_code);
     send_response(client_fd, &res);
 }
 
-void get_default_error_handler(int client_fd, struct response *res, int code)
+void get_default_error_handler(struct response *res, int code)
 {
 
     switch (code)
